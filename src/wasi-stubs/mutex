@@ -1,0 +1,26 @@
+// Stub <mutex> for WASI single-threaded environment.
+// C++ libraries that use std::mutex (e.g. Crypto++) need this since WASI
+// has no threading support. Safe because WASI plugins are single-threaded
+// (serialized by Go mutex on the host side).
+#pragma once
+
+namespace std {
+
+class mutex {
+public:
+  constexpr mutex() noexcept = default;
+  void lock() {}
+  void unlock() {}
+  bool try_lock() { return true; }
+};
+
+template <class Mutex>
+class lock_guard {
+public:
+  explicit lock_guard(Mutex&) {}
+  ~lock_guard() = default;
+  lock_guard(const lock_guard&) = delete;
+  lock_guard& operator=(const lock_guard&) = delete;
+};
+
+} // namespace std

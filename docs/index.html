@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDN Plugin SDK — Documentation</title>
+<style>
+:root {
+  --bg: #0a0e17;
+  --bg-card: #111827;
+  --bg-code: #1a2233;
+  --border: #1e293b;
+  --text: #e2e8f0;
+  --text-dim: #94a3b8;
+  --accent: #60a5fa;
+  --accent2: #a78bfa;
+  --green: #34d399;
+  --orange: #fb923c;
+  --red: #f87171;
+  --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* --- Header --- */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 32px 0;
+}
+
+header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+header p {
+  color: var(--text-dim);
+  font-size: 1.1rem;
+}
+
+/* --- Navigation --- */
+nav {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  background: rgba(10, 14, 23, 0.9);
+}
+
+nav .container {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+nav a:hover { color: var(--accent); text-decoration: none; }
+
+/* --- Sections --- */
+section {
+  padding: 48px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+section:last-child { border-bottom: none; }
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--text);
+}
+
+h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 32px 0 12px;
+  color: var(--text);
+}
+
+p { margin-bottom: 16px; }
+ul, ol { margin: 0 0 16px 24px; }
+li { margin-bottom: 8px; }
+
+/* --- Code blocks --- */
+pre {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  overflow-x: auto;
+  margin: 16px 0 24px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-code);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* --- Tables --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0 24px;
+  font-size: 0.9rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  color: var(--text-dim);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td code {
+  color: var(--green);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+/* --- Cards --- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 16px 0 24px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.card h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.card p {
+  color: var(--text-dim);
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+/* --- Badge --- */
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.badge-required { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+.badge-optional { background: rgba(96, 165, 250, 0.15); color: var(--accent); }
+
+/* --- Diagram --- */
+.diagram {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 16px 0 24px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.8;
+  white-space: pre;
+  overflow-x: auto;
+  text-align: center;
+}
+
+/* --- Footer --- */
+footer {
+  padding: 32px 0;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>SDN Plugin SDK</h1>
+    <p>Build WASI plugins for the Space Data Network server</p>
+  </div>
+</header>
+
+<nav>
+  <div class="container">
+    <a href="#overview">Overview</a>
+    <a href="#quickstart">Quick Start</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#abi">Plugin ABI</a>
+    <a href="#host-imports">Host Imports</a>
+    <a href="#memory">Memory Model</a>
+    <a href="#go-integration">Go Integration</a>
+    <a href="#cpp">C++ Plugins</a>
+    <a href="#rust">Rust Plugins</a>
+    <a href="#stubs">WASI Stubs</a>
+    <a href="#examples">Examples</a>
+    <a href="#reference">Reference</a>
+  </div>
+</nav>
+
+<!-- ===================== OVERVIEW ===================== -->
+<section id="overview">
+<div class="container">
+<h2>Overview</h2>
+<p>SDN plugins are WebAssembly modules compiled to the <a href="https://wasi.dev/">WASI</a> target. They are loaded at runtime by the Go server via <a href="https://wazero.io/">Wazero</a>, a pure-Go WebAssembly runtime with zero dependencies.</p>
+
+<div class="card-grid">
+  <div class="card">
+    <h4>Language Agnostic</h4>
+    <p>Write plugins in C, C++, Rust, Zig, or any language that compiles to WASI.</p>
+  </div>
+  <div class="card">
+    <h4>Sandboxed Execution</h4>
+    <p>Plugins run inside the WASM sandbox. No filesystem, no network, no system calls.</p>
+  </div>
+  <div class="card">
+    <h4>Host Services</h4>
+    <p>Plugins call back into the host for time, cryptographic randomness, and logging.</p>
+  </div>
+  <div class="card">
+    <h4>Portable Binaries</h4>
+    <p>One <code>.wasm</code> file runs on any OS and architecture the Go server supports.</p>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ===================== QUICK START ===================== -->
+<section id="quickstart">
+<div class="container">
+<h2>Quick Start</h2>
+
+<h3>1. Clone the Template</h3>
+<pre><code>git clone https://github.com/DigitalArsenal/sdn-plugin-template.git my-plugin
+cd my-plugin</code></pre>
+
+<h3>2. Install wasi-sdk</h3>
+<p>Download from <a href="https://github.com/WebAssembly/wasi-sdk/releases">wasi-sdk releases</a> and extract to <code>~/wasi-sdk</code>:</p>
+<pre><code># macOS (Apple Silicon)
+curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-25/wasi-sdk-25.0-arm64-macos.tar.gz
+tar xf wasi-sdk-25.0-arm64-macos.tar.gz && mv wasi-sdk-25.0-arm64-macos ~/wasi-sdk
+
+# macOS (Intel)
+curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-25/wasi-sdk-25.0-x86_64-macos.tar.gz
+tar xf wasi-sdk-25.0-x86_64-macos.tar.gz && mv wasi-sdk-25.0-x86_64-macos ~/wasi-sdk
+
+# Linux (x86_64)
+curl -LO https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-25/wasi-sdk-25.0-x86_64-linux.tar.gz
+tar xf wasi-sdk-25.0-x86_64-linux.tar.gz && mv wasi-sdk-25.0-x86_64-linux ~/wasi-sdk</code></pre>
+
+<h3>3. Build</h3>
+<pre><code>mkdir -p build-wasi && cd build-wasi
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/wasi-sdk.cmake -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)</code></pre>
+
+<h3>4. Verify</h3>
+<pre><code>file my-sdn-plugin.wasm
+# WebAssembly (wasm) binary module version 0x1 (MVP)
+
+wasm-objdump -x my-sdn-plugin.wasm | grep "plugin_\|malloc\|free"
+# func[N] &lt;plugin_init&gt; -&gt; "plugin_init"
+# func[N] &lt;plugin_get_public_key&gt; -&gt; "plugin_get_public_key"
+# func[N] &lt;plugin_get_metadata&gt; -&gt; "plugin_get_metadata"
+# func[N] &lt;plugin_handle_request&gt; -&gt; "plugin_handle_request"
+# func[N] &lt;malloc&gt; -&gt; "malloc"
+# func[N] &lt;free&gt; -&gt; "free"</code></pre>
+</div>
+</section>
+
+<!-- ===================== ARCHITECTURE ===================== -->
+<section id="architecture">
+<div class="container">
+<h2>Architecture</h2>
+
+<div class="diagram">┌──────────────────────────────────────────────────┐
+│                  SDN Go Server                   │
+│                                                  │
+│  ┌──────────┐    ┌────────────────────────────┐  │
+│  │  HTTP     │───▶│  Plugin Manager             │  │
+│  │  Router   │    │                            │  │
+│  └──────────┘    │  ┌──────────────────────┐  │  │
+│                  │  │  Wazero Runtime       │  │  │
+│                  │  │                      │  │  │
+│                  │  │  ┌────────────────┐  │  │  │
+│                  │  │  │  Your Plugin   │  │  │  │
+│                  │  │  │  (.wasm)       │  │  │  │
+│                  │  │  └───────┬────────┘  │  │  │
+│                  │  │          │           │  │  │
+│                  │  │   Host Imports:      │  │  │
+│                  │  │   • clock_now_ms     │  │  │
+│                  │  │   • random_bytes     │  │  │
+│                  │  │   • log              │  │  │
+│                  │  └──────────────────────┘  │  │
+│                  └────────────────────────────┘  │
+└──────────────────────────────────────────────────┘</div>
+
+<p>The lifecycle of a plugin:</p>
+<ol>
+  <li>Go server reads the <code>.wasm</code> file and instantiates a Wazero runtime</li>
+  <li>Host functions (<code>sdn.clock_now_ms</code>, <code>sdn.random_bytes</code>, <code>sdn.log</code>) are registered</li>
+  <li><code>plugin_init</code> is called with a binary config blob</li>
+  <li>HTTP routes are mounted; incoming requests are dispatched to <code>plugin_handle_request</code></li>
+  <li>On shutdown, the Wazero runtime is closed</li>
+</ol>
+</div>
+</section>
+
+<!-- ===================== PLUGIN ABI ===================== -->
+<section id="abi">
+<div class="container">
+<h2>Plugin ABI</h2>
+<p>Every SDN WASI plugin must export these C functions. Use <code>__attribute__((export_name("...")))</code> in C/C++ to ensure the symbols are exported.</p>
+
+<h3>Required Exports</h3>
+<table>
+  <thead><tr><th>Export</th><th>Signature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>malloc</code> <span class="badge badge-required">required</span></td>
+      <td><code>(i32) &rarr; i32</code></td>
+      <td>Standard C allocator. The host writes data into plugin memory via this.</td>
+    </tr>
+    <tr>
+      <td><code>free</code> <span class="badge badge-required">required</span></td>
+      <td><code>(i32)</code></td>
+      <td>Standard C deallocator. The host frees after each call.</td>
+    </tr>
+    <tr>
+      <td><code>plugin_init</code> <span class="badge badge-required">required</span></td>
+      <td><code>(i32, i32) &rarr; i32</code></td>
+      <td>Called once with <code>(config_ptr, config_len)</code>. Return 0 on success.</td>
+    </tr>
+    <tr>
+      <td><code>plugin_get_public_key</code> <span class="badge badge-required">required</span></td>
+      <td><code>(i32, i32) &rarr; i32</code></td>
+      <td>Write public identity to <code>(output_ptr, output_size)</code>. Return bytes written or -1.</td>
+    </tr>
+    <tr>
+      <td><code>plugin_get_metadata</code> <span class="badge badge-required">required</span></td>
+      <td><code>(i32, i32) &rarr; i32</code></td>
+      <td>Write metadata to <code>(output_ptr, output_size)</code>. Return bytes written or -1.</td>
+    </tr>
+    <tr>
+      <td><code>plugin_handle_request</code> <span class="badge badge-required">required</span></td>
+      <td><code>(i32, i32, i32, i32, i32, i32) &rarr; i32</code></td>
+      <td>Process request. Params: <code>(req_ptr, req_len, host_ptr, out_ptr, out_size, out_len_ptr)</code>. Return status (0 = OK).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Export Attributes (C/C++)</h3>
+<pre><code>__attribute__((export_name("plugin_init")))
+int32_t plugin_init(const uint8_t* config_ptr, size_t config_len) {
+    // Parse config, initialize state
+    return 0;
+}</code></pre>
+
+<h3>Config Format</h3>
+<p>The binary blob passed to <code>plugin_init</code> is plugin-specific. You define whatever format makes sense. The Go wrapper on the host side packs the config before calling init. Document your format so others can write host wrappers for different runtimes.</p>
+
+<h3>Status Codes</h3>
+<p>Functions that return status codes should use 0 for success. Non-zero values are plugin-defined error codes. The host logs non-zero statuses for debugging.</p>
+</div>
+</section>
+
+<!-- ===================== HOST IMPORTS ===================== -->
+<section id="host-imports">
+<div class="container">
+<h2>Host Imports</h2>
+<p>The host provides these functions in the <code>sdn</code> WASI module namespace. Include <code>host_imports.h</code> to declare them. All imports are <strong>optional</strong> &mdash; only declare what your plugin uses.</p>
+
+<table>
+  <thead><tr><th>Import</th><th>Signature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>sdn.clock_now_ms</code></td>
+      <td><code>() &rarr; i64</code></td>
+      <td>Current wall-clock time in milliseconds since Unix epoch</td>
+    </tr>
+    <tr>
+      <td><code>sdn.random_bytes</code></td>
+      <td><code>(i32, i32) &rarr; i32</code></td>
+      <td>Fill <code>(ptr, len)</code> with cryptographic random bytes. Returns 0 on success, -1 on error.</td>
+    </tr>
+    <tr>
+      <td><code>sdn.log</code></td>
+      <td><code>(i32, i32, i32)</code></td>
+      <td>Log message at <code>(level, ptr, len)</code>. Levels: 0=debug, 1=info, 2=warn, 3+=error</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Declaration (C/C++)</h3>
+<pre><code>#include "host_imports.h"
+
+// Use directly:
+int64_t now = sdn_clock_now_ms();
+sdn_random_bytes(buffer, 32);
+sdn_log(1, (const uint8_t*)"hello", 5);</code></pre>
+
+<h3>Declaration (Rust)</h3>
+<pre><code>#[link(wasm_import_module = "sdn")]
+extern "C" {
+    fn clock_now_ms() -> i64;
+    fn random_bytes(ptr: *mut u8, len: u32) -> i32;
+    fn log(level: i32, ptr: *const u8, len: u32);
+}</code></pre>
+</div>
+</section>
+
+<!-- ===================== MEMORY MODEL ===================== -->
+<section id="memory">
+<div class="container">
+<h2>Memory Model</h2>
+
+<p>WASM plugins have their own linear memory. The host and plugin share data through this memory using <code>malloc</code>/<code>free</code>.</p>
+
+<h3>How host &rarr; plugin calls work</h3>
+<ol>
+  <li>Host calls your <code>malloc(size)</code> to allocate space in plugin memory</li>
+  <li>Host writes input data into that allocation</li>
+  <li>Host calls your exported function with the pointer and length</li>
+  <li>Your function reads the input and writes output to a pre-allocated buffer</li>
+  <li>Host reads the output, then calls <code>free()</code> on all allocations</li>
+</ol>
+
+<h3>plugin_handle_request specifics</h3>
+<p>The host pre-allocates several buffers before calling <code>plugin_handle_request</code>:</p>
+<ul>
+  <li><code>req_ptr</code> / <code>req_len</code> &mdash; the request packet (host writes, you read)</li>
+  <li><code>host_ptr</code> &mdash; NUL-terminated host/origin string (host writes, you read)</li>
+  <li><code>out_ptr</code> / <code>out_size</code> &mdash; output buffer for your response (you write)</li>
+  <li><code>out_len_ptr</code> &mdash; 4-byte location where you write the actual response length as a uint32 LE</li>
+</ul>
+
+<pre><code>// Inside plugin_handle_request:
+// Write your response
+memcpy(output_buffer, response_data, response_len);
+
+// Tell the host how many bytes you wrote
+uint32_t len = (uint32_t)response_len;
+memcpy(output_len, &amp;len, 4);  // 4-byte LE
+
+return 0; // success</code></pre>
+</div>
+</section>
+
+<!-- ===================== GO INTEGRATION ===================== -->
+<section id="go-integration">
+<div class="container">
+<h2>Go Integration</h2>
+<p>On the server side, each WASI plugin needs a thin Go wrapper that implements the <code>plugins.Plugin</code> interface.</p>
+
+<h3>Plugin Interface</h3>
+<pre><code>type Plugin interface {
+    ID() string
+    Start(ctx context.Context, runtime RuntimeContext) error
+    RegisterRoutes(mux *http.ServeMux)
+    Close() error
+}</code></pre>
+
+<h3>Minimal Go Wrapper</h3>
+<pre><code>package myplugin
+
+import (
+    "context"
+    "os"
+
+    "github.com/spacedatanetwork/sdn-server/internal/wasiplugin"
+    "github.com/spacedatanetwork/sdn-server/plugins"
+)
+
+const ID = "my-plugin"
+
+type Plugin struct {
+    runtime  *wasiplugin.Runtime
+    handler  *wasiplugin.Handler
+    wasmPath string
+}
+
+func New(wasmPath string) *Plugin {
+    return &amp;Plugin{wasmPath: wasmPath}
+}
+
+func (p *Plugin) ID() string { return ID }
+
+func (p *Plugin) Start(ctx context.Context, rc plugins.RuntimeContext) error {
+    wasmBytes, err := os.ReadFile(p.wasmPath)
+    if err != nil {
+        return err
+    }
+
+    rt, err := wasiplugin.New(ctx, wasmBytes)
+    if err != nil {
+        return err
+    }
+
+    config := packYourConfig() // your binary config format
+    if err := rt.Init(ctx, config); err != nil {
+        rt.Close(ctx)
+        return err
+    }
+
+    p.runtime = rt
+    p.handler = wasiplugin.NewHandler(rt)
+    return nil
+}
+
+func (p *Plugin) RegisterRoutes(mux *http.ServeMux) {
+    if p.handler == nil { return }
+    mux.HandleFunc("/my-plugin/v1/data", p.handler.HandlePublicKey)
+    mux.HandleFunc("/my-plugin/v1/exchange", p.handler.HandleKeyExchange)
+}
+
+func (p *Plugin) Close() error {
+    if p.runtime != nil {
+        return p.runtime.Close(context.Background())
+    }
+    return nil
+}</code></pre>
+
+<h3>Registration (node.go)</h3>
+<pre><code>if wasmPath := findMyPluginWasm(); wasmPath != "" {
+    p := myplugin.New(wasmPath)
+    if err := n.plugins.Register(p); err != nil {
+        log.Warnf("plugin %q: %v", myplugin.ID, err)
+    }
+}</code></pre>
+</div>
+</section>
+
+<!-- ===================== C++ PLUGINS ===================== -->
+<section id="cpp">
+<div class="container">
+<h2>C++ Plugins</h2>
+<p>C++ plugins work but require extra build configuration because WASI lacks threading, full POSIX signals, and C++ exception support.</p>
+
+<h3>CMakeLists.txt Changes</h3>
+<p>Uncomment these lines in <code>CMakeLists.txt</code>:</p>
+<pre><code># Enable exceptions + RTTI (needed by Crypto++, Boost, etc.)
+string(REPLACE "-fno-exceptions" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+string(REPLACE "-fno-rtti" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fexceptions -frtti -D_WASI_EMULATED_SIGNAL")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_WASI_EMULATED_SIGNAL")</code></pre>
+
+<h3>Add CXA Stubs</h3>
+<p>Add the exception stubs to your source list:</p>
+<pre><code>set(PLUGIN_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/my_plugin.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/wasi-stubs/cxa_stubs.cpp
+)</code></pre>
+
+<h3>Link Signal Emulation</h3>
+<p>Uncomment in the linker flags:</p>
+<pre><code>target_link_options(sdn_plugin PRIVATE -lwasi-emulated-signal)</code></pre>
+
+<h3>FetchContent Dependencies</h3>
+<p>Use CMake FetchContent for C++ libraries. Important: set override flags <strong>before</strong> <code>FetchContent_MakeAvailable</code> so dependencies inherit your WASI-compatible settings.</p>
+<pre><code>include(FetchContent)
+FetchContent_Declare(cryptopp_cmake
+  GIT_REPOSITORY https://github.com/abdes/cryptopp-cmake.git
+  GIT_TAG        604d3df147e7b16fb7caa70e22c54c9a40ac1bd5
+  GIT_SHALLOW    TRUE)
+
+# Disable ASM — not available in WASM
+set(CRYPTOPP_DISABLE_ASM ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(cryptopp_cmake)
+
+target_link_libraries(sdn_plugin PRIVATE cryptopp)</code></pre>
+
+<h3>WASI Stubs Explained</h3>
+<p>The <code>src/wasi-stubs/</code> directory provides headers that shadow missing POSIX features:</p>
+<table>
+  <thead><tr><th>Stub</th><th>Shadows</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td><code>mutex</code></td><td><code>&lt;mutex&gt;</code></td><td>No-op mutex/lock_guard for single-threaded WASM</td></tr>
+    <tr><td><code>setjmp.h</code></td><td><code>&lt;setjmp.h&gt;</code></td><td>Stub setjmp/longjmp used by crypto libs for SIMD detection</td></tr>
+    <tr><td><code>signal.h</code></td><td><code>&lt;signal.h&gt;</code></td><td>Adds sigset_t/sigprocmask missing from WASI emulated signals</td></tr>
+    <tr><td><code>cxa_stubs.cpp</code></td><td>C++ exception ABI</td><td>Provides __cxa_throw etc. as abort() &mdash; exceptions become WASM traps</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<!-- ===================== RUST PLUGINS ===================== -->
+<section id="rust">
+<div class="container">
+<h2>Rust Plugins</h2>
+<p>Rust has first-class WASI support. Target <code>wasm32-wasip1</code>:</p>
+
+<h3>Cargo.toml</h3>
+<pre><code>[package]
+name = "my-sdn-plugin"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]</code></pre>
+
+<h3>Build</h3>
+<pre><code>rustup target add wasm32-wasip1
+cargo build --target wasm32-wasip1 --release
+# Output: target/wasm32-wasip1/release/my_sdn_plugin.wasm</code></pre>
+
+<h3>Implementation</h3>
+<pre><code>use std::alloc::{alloc, dealloc, Layout};
+
+#[link(wasm_import_module = "sdn")]
+extern "C" {
+    fn clock_now_ms() -> i64;
+    fn random_bytes(ptr: *mut u8, len: u32) -> i32;
+    fn log(level: i32, ptr: *const u8, len: u32);
+}
+
+fn log_info(msg: &amp;str) {
+    unsafe { log(1, msg.as_ptr(), msg.len() as u32) };
+}
+
+#[no_mangle]
+pub extern "C" fn plugin_init(config_ptr: *const u8, config_len: usize) -&gt; i32 {
+    if config_ptr.is_null() || config_len == 0 {
+        return 1;
+    }
+    let _config = unsafe { std::slice::from_raw_parts(config_ptr, config_len) };
+    log_info("rust plugin initialized");
+    0
+}
+
+#[no_mangle]
+pub extern "C" fn plugin_get_public_key(output: *mut u8, output_size: usize) -&gt; i32 {
+    if output.is_null() || output_size &lt; 32 { return -1; }
+    unsafe { random_bytes(output, 32) };
+    32
+}
+
+#[no_mangle]
+pub extern "C" fn plugin_get_metadata(output: *mut u8, output_size: usize) -&gt; i32 {
+    if output.is_null() || output_size &lt; 4 { return -1; }
+    unsafe { std::ptr::write_bytes(output, 0, 4) };
+    4
+}
+
+#[no_mangle]
+pub extern "C" fn plugin_handle_request(
+    req_ptr: *const u8, req_len: usize,
+    _host_ptr: *const u8,
+    out_ptr: *mut u8, out_size: usize,
+    out_len_ptr: *mut usize,
+) -&gt; i32 {
+    if out_ptr.is_null() || out_len_ptr.is_null() { return 1; }
+
+    let now = unsafe { clock_now_ms() };
+    let resp_len = 8 + req_len;
+
+    if out_size &lt; resp_len {
+        unsafe { *out_len_ptr = 0 };
+        return 7;
+    }
+
+    unsafe {
+        std::ptr::copy_nonoverlapping(
+            now.to_le_bytes().as_ptr(), out_ptr, 8
+        );
+        if !req_ptr.is_null() &amp;&amp; req_len &gt; 0 {
+            std::ptr::copy_nonoverlapping(
+                req_ptr, out_ptr.add(8), req_len
+            );
+        }
+        *out_len_ptr = resp_len;
+    }
+
+    0
+}</code></pre>
+
+<p><strong>Note:</strong> Rust's standard allocator provides <code>malloc</code>/<code>free</code> automatically when targeting WASI with <code>cdylib</code> crate type.</p>
+</div>
+</section>
+
+<!-- ===================== WASI STUBS ===================== -->
+<section id="stubs">
+<div class="container">
+<h2>WASI Stubs Reference</h2>
+<p>WASI is a minimal system interface. Many POSIX features are absent. The template provides stub headers in <code>src/wasi-stubs/</code> that shadow missing system headers via <code>include_directories(BEFORE SYSTEM ...)</code>.</p>
+
+<h3>When You Need Stubs</h3>
+<ul>
+  <li><strong>mutex</strong> &mdash; if any C++ dependency uses <code>std::mutex</code> or <code>std::lock_guard</code></li>
+  <li><strong>setjmp.h</strong> &mdash; if any dependency includes <code>&lt;setjmp.h&gt;</code> (common in crypto libraries for SIMD detection)</li>
+  <li><strong>signal.h</strong> &mdash; if any dependency uses <code>sigset_t</code>, <code>sigprocmask</code>, <code>SIG_SETMASK</code> (common in CPU feature detection code)</li>
+  <li><strong>cxa_stubs.cpp</strong> &mdash; if any C++ code uses <code>throw</code> (directly or via template instantiation)</li>
+</ul>
+
+<h3>When You Don't Need Stubs</h3>
+<ul>
+  <li>Pure C plugins with no external dependencies</li>
+  <li>Rust plugins (Rust's std handles WASI natively)</li>
+  <li>C++ plugins that only use header-only libraries without exceptions or threading</li>
+</ul>
+
+<h3>Adding Your Own Stubs</h3>
+<p>If a dependency needs another missing header, create a stub in <code>src/wasi-stubs/</code>. The <code>include_directories(BEFORE SYSTEM ...)</code> in CMakeLists.txt ensures stubs shadow system headers. Use <code>#include_next</code> if you need to wrap the real WASI header and add extensions (see <code>signal.h</code> for an example).</p>
+</div>
+</section>
+
+<!-- ===================== EXAMPLES ===================== -->
+<section id="examples">
+<div class="container">
+<h2>Examples</h2>
+
+<h3>Echo Plugin (C)</h3>
+<p>The simplest working plugin. Echoes requests back with a timestamp prefix. See <a href="https://github.com/DigitalArsenal/sdn-plugin-template/blob/main/examples/echo_plugin.c"><code>examples/echo_plugin.c</code></a>.</p>
+
+<p>To build it, edit <code>CMakeLists.txt</code>:</p>
+<pre><code>set(PLUGIN_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/examples/echo_plugin.c
+)</code></pre>
+
+<h3>OrbPro Key Broker (C++)</h3>
+<p>A production plugin implementing P-256 ECDH key exchange for the OrbPro protection runtime. Uses Crypto++ via FetchContent. See <a href="https://github.com/DigitalArsenal/sdn-license-plugin">sdn-license-plugin</a>.</p>
+</div>
+</section>
+
+<!-- ===================== REFERENCE ===================== -->
+<section id="reference">
+<div class="container">
+<h2>Quick Reference</h2>
+
+<h3>Project Structure</h3>
+<pre><code>sdn-plugin-template/
+├── CMakeLists.txt              # Build config (edit for your plugin)
+├── cmake/wasi-sdk.cmake        # wasi-sdk toolchain
+├── src/
+│   ├── plugin.c                # Skeleton (replace with your code)
+│   ├── host_imports.h          # Host function declarations
+│   └── wasi-stubs/             # POSIX stubs for WASI
+│       ├── cxa_stubs.cpp       # C++ exception ABI
+│       ├── mutex               # std::mutex no-op
+│       ├── setjmp.h            # setjmp/longjmp no-op
+│       └── signal.h            # sigset_t/sigprocmask stubs
+├── examples/
+│   └── echo_plugin.c           # Minimal working example
+└── docs/
+    └── index.html              # This documentation</code></pre>
+
+<h3>Build Commands</h3>
+<pre><code># Configure
+mkdir -p build-wasi && cd build-wasi
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/wasi-sdk.cmake -DCMAKE_BUILD_TYPE=Release
+
+# Build
+make -j$(nproc)
+
+# Clean rebuild
+rm -rf build-wasi && mkdir build-wasi && cd build-wasi
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/wasi-sdk.cmake -DCMAKE_BUILD_TYPE=Release && make
+
+# Inspect exports
+wasm-objdump -x my-sdn-plugin.wasm | grep "->"</code></pre>
+
+<h3>Environment Variables (Go host)</h3>
+<table>
+  <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>WASI_SDK_PREFIX</code></td><td>Path to wasi-sdk (build time)</td></tr>
+    <tr><td><code>ORBPRO_KEY_BROKER_WASM_PATH</code></td><td>Path to plugin .wasm file (runtime)</td></tr>
+  </tbody>
+</table>
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://github.com/DigitalArsenal/sdn-plugin-template">Plugin Template (this repo)</a></li>
+  <li><a href="https://github.com/DigitalArsenal/sdn-license-plugin">OrbPro Key Broker Plugin</a></li>
+  <li><a href="https://github.com/WebAssembly/wasi-sdk">wasi-sdk</a></li>
+  <li><a href="https://wazero.io/">Wazero (Go WASM runtime)</a></li>
+  <li><a href="https://wasi.dev/">WASI specification</a></li>
+</ul>
+</div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>SDN Plugin SDK &mdash; <a href="https://github.com/DigitalArsenal">DigitalArsenal</a> &mdash; MIT License</p>
+  </div>
+</footer>
+
+</body>
+</html>
