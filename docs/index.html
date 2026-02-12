@@ -250,6 +250,7 @@ footer {
     <a href="#host-imports">Host Imports</a>
     <a href="#memory">Memory Model</a>
     <a href="#go-integration">Go Integration</a>
+    <a href="#plugin-ui">Plugin UI</a>
     <a href="#cpp">C++ Plugins</a>
     <a href="#rust">Rust Plugins</a>
     <a href="#stubs">WASI Stubs</a>
@@ -586,6 +587,124 @@ func (p *Plugin) Close() error {
         log.Warnf("plugin %q: %v", myplugin.ID, err)
     }
 }</code></pre>
+</div>
+</section>
+
+<!-- ===================== PLUGIN UI ===================== -->
+<section id="plugin-ui">
+<div class="container">
+<h2>Plugin UI</h2>
+<p>Plugins can provide a web interface that appears on the <strong>Plugins</strong> page in the SDN web client. The UI is rendered inside a sandboxed iframe, so you have full control over layout and styling.</p>
+
+<h3>How It Works</h3>
+<ol>
+  <li>Your Go wrapper implements the <code>UIProvider</code> interface</li>
+  <li>The plugin manager exposes a manifest at <code>GET /api/v1/plugins/manifest</code></li>
+  <li>The web client fetches the manifest and renders plugin cards</li>
+  <li>Clicking a card opens your plugin's UI URL in an iframe</li>
+</ol>
+
+<div class="diagram">┌─────────────────────────────────────────────┐
+│             SDN Web Client                  │
+│                                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
+│  │ Plugin A │  │ Plugin B │  │ Plugin C │  │
+│  │  (card)  │  │  (card)  │  │  (card)  │  │
+│  └────┬─────┘  └──────────┘  └──────────┘  │
+│       │ click                               │
+│       ▼                                     │
+│  ┌──────────────────────────────────────┐   │
+│  │  iframe: /my-plugin/v1/ui            │   │
+│  │  ┌──────────────────────────────┐    │   │
+│  │  │   Your plugin's HTML page    │    │   │
+│  │  └──────────────────────────────┘    │   │
+│  └──────────────────────────────────────┘   │
+└─────────────────────────────────────────────┘</div>
+
+<h3>UIProvider Interface</h3>
+<p>Implement this optional Go interface to declare your plugin's UI metadata:</p>
+<pre><code>// UIDescriptor describes a plugin's web UI.
+type UIDescriptor struct {
+    Title       string `json:"title"`
+    Description string `json:"description,omitempty"`
+    Icon        string `json:"icon,omitempty"`        // emoji or single character
+    Color       string `json:"color,omitempty"`        // CSS background for icon badge
+    TextColor   string `json:"textColor,omitempty"`    // CSS text color for icon badge
+    URL         string `json:"url,omitempty"`          // path to plugin UI page
+}
+
+// UIProvider is an optional interface plugins can implement.
+type UIProvider interface {
+    UIDescriptor() plugins.UIDescriptor
+}</code></pre>
+
+<h3>Example Implementation</h3>
+<pre><code>func (p *Plugin) UIDescriptor() plugins.UIDescriptor {
+    return plugins.UIDescriptor{
+        Title:       "My Plugin",
+        Description: "Does something cool",
+        Icon:        "⚡",
+        Color:       "#fef3c7",
+        TextColor:   "#92400e",
+        URL:         "/my-plugin/v1/ui",
+    }
+}
+
+// Serve the UI HTML page
+func (p *Plugin) RegisterRoutes(mux *http.ServeMux) {
+    mux.HandleFunc("/my-plugin/v1/ui", p.handleUI)
+    // ... other routes
+}
+
+func (p *Plugin) handleUI(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "text/html; charset=utf-8")
+    fmt.Fprintf(w, `&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body&gt;
+  &lt;h2&gt;My Plugin&lt;/h2&gt;
+  &lt;p&gt;Status: Running&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;`)
+}</code></pre>
+
+<h3>Manifest API</h3>
+<p>The plugin manager automatically exposes <code>GET /api/v1/plugins/manifest</code> which returns JSON like:</p>
+<pre><code>[
+  {
+    "id": "my-plugin",
+    "version": "1.0.0",
+    "status": "running",
+    "description": "Does something cool",
+    "ui": {
+      "title": "My Plugin",
+      "description": "Does something cool",
+      "icon": "⚡",
+      "color": "#fef3c7",
+      "textColor": "#92400e",
+      "url": "/my-plugin/v1/ui"
+    }
+  }
+]</code></pre>
+
+<h3>Optional Interfaces</h3>
+<p>Beyond <code>UIProvider</code>, the plugin manager also checks for these optional interfaces via type assertion:</p>
+<table>
+  <thead><tr><th>Interface</th><th>Method</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>UIProvider</code></td><td><code>UIDescriptor() UIDescriptor</code></td><td>Provides web UI metadata for the Plugins page</td></tr>
+    <tr><td>Version</td><td><code>Version() string</code></td><td>Semantic version shown on plugin card</td></tr>
+    <tr><td>Description</td><td><code>Description() string</code></td><td>Short description shown on plugin card</td></tr>
+  </tbody>
+</table>
+
+<h3>UI Design Tips</h3>
+<ul>
+  <li>The iframe has <code>sandbox="allow-scripts allow-same-origin allow-forms allow-popups"</code></li>
+  <li>Your UI page can make fetch requests back to your plugin's API endpoints</li>
+  <li>Keep the page lightweight &mdash; it loads inside the SDN dashboard</li>
+  <li>Use a simple, clean design that matches the SDN style (system fonts, neutral colors)</li>
+  <li>The iframe fills the available width and has a minimum height of 400px</li>
+</ul>
 </div>
 </section>
 
